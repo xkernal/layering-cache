@@ -12,6 +12,7 @@ import com.github.xiaolyuh.support.NullValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
 /**
@@ -80,6 +81,11 @@ public class CaffeineCache extends AbstractValueAdaptingCache {
             evict(key);
         }
         return (T) fromStoreValue(result);
+    }
+
+    @Override
+    public <T> T get(String key, Class<T> resultType, Type[] realTypes, Callable<T> valueLoader) {
+        return this.get(key, resultType, valueLoader);
     }
 
     @Override

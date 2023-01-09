@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,7 +94,19 @@ public class SentinelRedisClient implements RedisClient {
     public <T> T get(String key, Class<T> resultType) {
         try {
             RedisCommands<byte[], byte[]> sync = connection.sync();
-            return getValueSerializer().deserialize(sync.get(getKeySerializer().serialize(key)), resultType);
+            return getValueSerializer().deserialize(sync.get(getKeySerializer().serialize(key)), resultType, null);
+        } catch (SerializationException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RedisClientException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public <T> T get(String key, Class<T> resultType, Type[] realTypes) {
+        try {
+            RedisCommands<byte[], byte[]> sync = connection.sync();
+            return getValueSerializer().deserialize(sync.get(getKeySerializer().serialize(key)), resultType, realTypes);
         } catch (SerializationException e) {
             throw e;
         } catch (Exception e) {
@@ -105,7 +118,7 @@ public class SentinelRedisClient implements RedisClient {
     public <T> T get(String key, Class<T> resultType, RedisSerializer valueRedisSerializer) {
         try {
             RedisCommands<byte[], byte[]> sync = connection.sync();
-            return valueRedisSerializer.deserialize(sync.get(getKeySerializer().serialize(key)), resultType);
+            return valueRedisSerializer.deserialize(sync.get(getKeySerializer().serialize(key)), resultType, null);
         } catch (SerializationException e) {
             throw e;
         } catch (Exception e) {
@@ -270,7 +283,7 @@ public class SentinelRedisClient implements RedisClient {
                 return list;
             }
             for (byte[] value : values) {
-                list.add(valueRedisSerializer.deserialize(value, String.class));
+                list.add(valueRedisSerializer.deserialize(value, String.class, null));
             }
             return list;
         } catch (SerializationException e) {
@@ -289,7 +302,7 @@ public class SentinelRedisClient implements RedisClient {
             ScanCursor cursor = ScanCursor.INITIAL;
             do {
                 KeyScanCursor<byte[]> scanCursor = sync.scan(cursor, ScanArgs.Builder.limit(10000).match(pattern));
-                scanCursor.getKeys().forEach(key -> keys.add(getKeySerializer().deserialize(key, String.class)));
+                scanCursor.getKeys().forEach(key -> keys.add(getKeySerializer().deserialize(key, String.class, null)));
                 finished = scanCursor.isFinished();
                 cursor = ScanCursor.of(scanCursor.getCursor());
             } while (!finished);

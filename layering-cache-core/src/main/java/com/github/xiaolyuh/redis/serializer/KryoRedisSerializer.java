@@ -6,6 +6,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 
 /**
@@ -40,7 +41,7 @@ public class KryoRedisSerializer extends AbstractRedisSerializer {
     }
 
     @Override
-    public <T> T deserialize(byte[] bytes, Class<T> resultType) throws SerializationException {
+    public <T> T deserialize(byte[] bytes, Class<T> resultType, Type[]realTypes) throws SerializationException {
         if (SerializationUtils.isEmpty(bytes)) {
             return null;
         }

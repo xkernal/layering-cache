@@ -4,6 +4,7 @@ import com.github.xiaolyuh.listener.RedisMessageListener;
 import com.github.xiaolyuh.redis.serializer.RedisSerializer;
 import com.github.xiaolyuh.util.StringUtils;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +44,17 @@ public interface RedisClient {
      * @author manddoxli
      */
     <T> T get(String key, Class<T> resultType);
+
+    /**
+     * 通过key获取储存在redis中的value,自动转对象
+     *
+     * @param key        key
+     * @param resultType 返回值类型对应的Class对象
+     * @param <T>        返回值类型
+     * @return 成功返回value 失败返回null
+     * @author manddoxli
+     */
+    <T> T get(String key, Class<T> resultType, Type[] realTypes);
 
     /**
      * 通过key获取储存在redis中的value,自动转对象

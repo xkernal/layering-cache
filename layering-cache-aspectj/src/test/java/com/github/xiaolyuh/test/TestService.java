@@ -6,6 +6,9 @@ import com.github.xiaolyuh.annotation.Cacheable;
 import com.github.xiaolyuh.annotation.Caching;
 import com.github.xiaolyuh.annotation.FirstCache;
 import com.github.xiaolyuh.annotation.SecondaryCache;
+import com.github.xiaolyuh.domain.Normal;
+import com.github.xiaolyuh.domain.Normal2;
+import com.github.xiaolyuh.domain.Student;
 import com.github.xiaolyuh.domain.User;
 import com.github.xiaolyuh.support.CacheMode;
 import org.slf4j.Logger;
@@ -524,6 +527,65 @@ public class TestService {
         user.setAge(311);
         user.setLastName(new String[]{"w", "y", "h"});
         return user;
+    }
+
+    @Cacheable(value = "user:info", key = "#userId",
+        secondaryCache = @SecondaryCache(expireTime = 10, preloadTime = 3,
+             timeUnit = TimeUnit.SECONDS))
+    public User getUserByIdCondition2(long userId) {
+        logger.debug("测试正常配置的缓存方法，参数是基本类型");
+        User user = new User();
+        user.setUserId(userId);
+        user.setAge(31);
+        user.setLastName(new String[]{"w", "y", "h"});
+        return user;
+    }
+
+    @Cacheable(value = "normal:info", key = "#userId",
+        secondaryCache = @SecondaryCache(expireTime = 10, preloadTime = 3,
+            timeUnit = TimeUnit.MINUTES), cacheMode = CacheMode.SECOND)
+    public Normal<User> getUserByIdCondition3(long userId) {
+        logger.debug("测试正常配置的缓存方法，参数是基本类型");
+        Normal<User> normal = new Normal<>();
+        User user = new User();
+        user.setUserId(userId);
+        user.setAge(31);
+        user.setLastName(new String[]{"w", "y", "h"});
+        normal.setData(user);
+        return normal;
+    }
+
+    @Cacheable(value = "normal:info:list", key = "#userId",
+        secondaryCache = @SecondaryCache(expireTime = 10, preloadTime = 3,
+            timeUnit = TimeUnit.MINUTES), cacheMode = CacheMode.SECOND)
+    public List<User> getUserByIdCondition4(long userId) {
+        logger.debug("测试正常配置的缓存方法，参数是基本类型");
+        List<User> list = new ArrayList<>();
+        User user = new User();
+        user.setUserId(userId);
+        user.setAge(31);
+        user.setLastName(new String[]{"w", "y", "h"});
+        list.add(user);
+        return list;
+    }
+
+    @Cacheable(value = "normal:info:2", key = "#userId",
+        secondaryCache = @SecondaryCache(expireTime = 10, preloadTime = 3,
+            timeUnit = TimeUnit.MINUTES), cacheMode = CacheMode.SECOND)
+    public Normal2<User, Student> getUserByIdCondition5(long userId) {
+        logger.debug("测试正常配置的缓存方法，参数是基本类型");
+        Normal2<User, Student> normal = new Normal2<>();
+        User user = new User();
+        user.setUserId(userId);
+        user.setAge(31);
+        user.setLastName(new String[]{"w", "y", "h"});
+
+        Student student = new Student();
+        student.setId(1L);
+        student.setName("test");
+        normal.setData1(user);
+        normal.setData2(student);
+        return normal;
     }
 
     @Cacheable(value = "user:info", key = "#userId", condition = "#userId>110",

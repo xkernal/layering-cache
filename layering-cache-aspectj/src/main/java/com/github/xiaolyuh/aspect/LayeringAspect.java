@@ -32,8 +32,11 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -205,8 +208,17 @@ public class LayeringAspect {
         // 通过cacheName和缓存配置获取Cache
         Cache cache = cacheManager.getCache(cacheName, layeringCacheSetting);
 
-        // 通Cache获取值
-        return cache.get(ToStringUtils.toString(key), method.getReturnType(), valueLoader);
+        /**
+         * 增加返回值是泛型类的处理
+         */
+        Type genericReturnType = method.getGenericReturnType();
+        if(genericReturnType!=null&&genericReturnType instanceof ParameterizedType) {
+            Type[] types = ((ParameterizedTypeImpl)method.getGenericReturnType()).getActualTypeArguments();
+            return cache.get(ToStringUtils.toString(key), method.getReturnType(), types, valueLoader);
+        } else {
+            // 通Cache获取值
+            return cache.get(ToStringUtils.toString(key), method.getReturnType(), valueLoader);
+        }
     }
 
     /**

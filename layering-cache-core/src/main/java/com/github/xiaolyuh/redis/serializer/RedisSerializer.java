@@ -1,5 +1,7 @@
 package com.github.xiaolyuh.redis.serializer;
 
+import java.lang.reflect.Type;
+
 import org.springframework.lang.Nullable;
 
 /**
@@ -26,9 +28,10 @@ public interface RedisSerializer {
      * @param bytes      给定的二进制数据. 允许为 {@literal null}.
      * @param resultType 返回值类型
      * @param <T>        T
+     * @param realTypes 泛型具体类
      * @return 反序列化后的对象.允许为 {@literal null}.
      * @throws SerializationException 序列化异常
      */
     @Nullable
-    <T> T deserialize(@Nullable byte[] bytes, Class<T> resultType) throws SerializationException;
+    <T> T deserialize(@Nullable byte[] bytes, Class<T> resultType, Type[] realTypes) throws SerializationException;
 }

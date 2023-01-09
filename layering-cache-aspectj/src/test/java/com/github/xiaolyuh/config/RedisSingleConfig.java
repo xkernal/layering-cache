@@ -50,7 +50,7 @@ public class RedisSingleConfig {
         SingleRedisClient redisClient = new SingleRedisClient(redisProperties);
 
         redisClient.setKeySerializer(keyRedisSerializer);
-        redisClient.setValueSerializer(protostuffRedisSerializer);
+        redisClient.setValueSerializer(fastJsonRedisSerializer);
         return redisClient;
     }
 }

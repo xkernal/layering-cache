@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 
 /**
@@ -36,7 +37,7 @@ public class JacksonRedisSerializer extends AbstractRedisSerializer {
     }
 
     @Override
-    public <T> T deserialize(byte[] bytes, Class<T> resultType) throws SerializationException {
+    public <T> T deserialize(byte[] bytes, Class<T> resultType, Type[] realTypes) throws SerializationException {
         if (SerializationUtils.isEmpty(bytes)) {
             return null;
         }

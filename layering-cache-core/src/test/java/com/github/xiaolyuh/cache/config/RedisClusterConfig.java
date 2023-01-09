@@ -41,7 +41,7 @@ public class RedisClusterConfig {
         RedisClient redisClient = new ClusterRedisClient(redisProperties);
 
         redisClient.setKeySerializer(keyRedisSerializer);
-        redisClient.setValueSerializer(kryoRedisSerializer);
+        redisClient.setValueSerializer(fastJsonRedisSerializer);
         return redisClient;
     }
 }

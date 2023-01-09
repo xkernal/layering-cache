@@ -7,6 +7,7 @@ import io.protostuff.runtime.DefaultIdStrategy;
 import io.protostuff.runtime.IdStrategy;
 import io.protostuff.runtime.RuntimeSchema;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 
 /**
@@ -43,7 +44,7 @@ public class ProtostuffRedisSerializer extends AbstractRedisSerializer {
     }
 
     @Override
-    public <T> T deserialize(byte[] bytes, Class<T> resultType) throws SerializationException {
+    public <T> T deserialize(byte[] bytes, Class<T> resultType, Type[]realTypes) throws SerializationException {
         if (SerializationUtils.isEmpty(bytes)) {
             return null;
         }

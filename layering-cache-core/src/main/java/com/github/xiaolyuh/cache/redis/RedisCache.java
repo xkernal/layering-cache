@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -150,6 +151,28 @@ public class RedisCache extends AbstractValueAdaptingCache {
         if (Objects.nonNull(result) || redisClient.hasKey(redisCacheKey.getKey())) {
             // 如果结果为null，则在查一次redis，防止并发情况直接返回null值
             result = Objects.isNull(result) ? redisClient.get(redisCacheKey.getKey(), resultType) : result;
+            // 刷新缓存
+            refreshCache(redisCacheKey, resultType, valueLoader, result);
+            return (T) fromStoreValue(result);
+        }
+        // 执行缓存方法
+        return executeCacheMethod(redisCacheKey, resultType, valueLoader);
+    }
+    @Override
+    public <T> T get(String key, Class<T> resultType, Type[] realTypes, Callable<T> valueLoader) {
+        if (isStats()) {
+            getCacheStats().addCacheRequestCount(1);
+        }
+
+        RedisCacheKey redisCacheKey = getRedisCacheKey(key);
+        if (logger.isDebugEnabled()) {
+            logger.debug("redis缓存 key= {} 查询redis缓存如果没有命中，从数据库获取数据", redisCacheKey.getKey());
+        }
+        // 先获取缓存，如果有直接返回
+        T result = redisClient.get(redisCacheKey.getKey(), resultType, realTypes);
+        if (Objects.nonNull(result) || redisClient.hasKey(redisCacheKey.getKey())) {
+            // 如果结果为null，则在查一次redis，防止并发情况直接返回null值
+            result = Objects.isNull(result) ? redisClient.get(redisCacheKey.getKey(), resultType, realTypes) : result;
             // 刷新缓存
             refreshCache(redisCacheKey, resultType, valueLoader, result);
             return (T) fromStoreValue(result);

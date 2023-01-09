@@ -8,6 +8,7 @@ import com.github.xiaolyuh.support.CacheMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
 /**
@@ -120,6 +121,34 @@ public class LayeringCache extends AbstractValueAdaptingCache {
         T result = null;
         if (!CacheMode.FIRST.equals(cacheMode)) {
             result = secondCache.get(key, resultType, valueLoader);
+        }
+
+        // 开启一级缓存
+        if (!CacheMode.SECOND.equals(cacheMode)) {
+            firstCache.putIfAbsent(key, result, resultType);
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("查询二级缓存,并将数据放到一级缓存。 key={}:{},返回值是:{}", getName(), key, JSON.toJSONString(result));
+        }
+        return result;
+    }
+
+    @Override
+    public <T> T get(String key, Class<T> resultType, Type[] realTypes, Callable<T> valueLoader) {
+        // 开启一级缓存
+        if (!CacheMode.SECOND.equals(cacheMode)) {
+            T result = CacheMode.FIRST.equals(cacheMode) ? firstCache.get(key, resultType, valueLoader) : firstCache.get(key, resultType);
+            if (logger.isDebugEnabled()) {
+                logger.debug("查询一级缓存。 key={}:{},返回值是:{}", getName(), key, JSON.toJSONString(result));
+            }
+            if (result != null) {
+                return (T) fromStoreValue(result);
+            }
+        }
+        // 开启二级缓存
+        T result = null;
+        if (!CacheMode.FIRST.equals(cacheMode)) {
+            result = secondCache.get(key, resultType, realTypes, valueLoader);
         }
 
         // 开启一级缓存

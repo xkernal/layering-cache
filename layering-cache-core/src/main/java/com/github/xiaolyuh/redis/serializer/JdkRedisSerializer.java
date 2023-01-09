@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 
 /**
@@ -37,7 +38,7 @@ public class JdkRedisSerializer extends AbstractRedisSerializer {
     }
 
     @Override
-    public <T> T deserialize(byte[] bytes, Class<T> resultType) throws SerializationException {
+    public <T> T deserialize(byte[] bytes, Class<T> resultType, Type[]realTypes) throws SerializationException {
         if (SerializationUtils.isEmpty(bytes)) {
             return null;
         }

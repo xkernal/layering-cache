@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.github.xiaolyuh.cache.Cache;
 import com.github.xiaolyuh.cache.LayeringCache;
 import com.github.xiaolyuh.config.CacheSingleConfig;
+import com.github.xiaolyuh.domain.Normal;
+import com.github.xiaolyuh.domain.Normal2;
+import com.github.xiaolyuh.domain.Student;
 import com.github.xiaolyuh.domain.User;
 import com.github.xiaolyuh.manager.CacheManager;
 import com.github.xiaolyuh.manager.LayeringCacheManager;
@@ -54,17 +57,16 @@ public class CacheSingleAspectTest {
     private CacheManager cacheManager;
 
     @Test
-    public void testCondition() {
-        long userId = 100;
+    public void testDeserilize() {
+        Normal<User> n1 = testService.getUserByIdCondition3(1L);
+        Normal<User> n2 = testService.getUserByIdCondition3(1L);
 
-        User user = testService.getUserByIdCondition(userId);
-        Object result = redisClient.get("user:info:100", User.class);
-        Assert.assertNull(result);
+        List<User> users1 = testService.getUserByIdCondition4(2);
+        List<User> users2 = testService.getUserByIdCondition4(2);
 
-
-        testService.getUserByIdCondition(111);
-        result = redisClient.get("user:info:111", User.class);
-        Assert.assertNotNull(result);
+        Normal2<User, Student> nd1 = testService.getUserByIdCondition5(3);
+        Normal2<User, Student> nd2 = testService.getUserByIdCondition5(3);
+        System.out.println("111111");
     }
 
     @Test

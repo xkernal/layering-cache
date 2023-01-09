@@ -3,6 +3,7 @@ package com.github.xiaolyuh.cache;
 import com.github.xiaolyuh.manager.CacheManager;
 import com.github.xiaolyuh.stats.CacheStats;
 
+import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
 /**
@@ -46,6 +47,8 @@ public interface Cache {
      * @return 缓存key对应的值
      */
     <T> T get(String key, Class<T> resultType, Callable<T> valueLoader);
+
+    <T> T get(String key, Class<T> resultType, Type[] realTypes, Callable<T> valueLoader);
 
     /**
      * 将对应key-value放到缓存，如果key原来有值就直接覆盖

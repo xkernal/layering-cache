@@ -2,6 +2,7 @@ package com.github.xiaolyuh.redis.serializer;
 
 import org.springframework.util.Assert;
 
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -36,7 +37,7 @@ public class StringRedisSerializer implements RedisSerializer {
     }
 
     @Override
-    public String deserialize(byte[] bytes, Class resultType) throws SerializationException {
+    public String deserialize(byte[] bytes, Class resultType, Type[] realTypes) throws SerializationException {
 
         return (bytes == null ? null : new String(bytes, charset));
     }

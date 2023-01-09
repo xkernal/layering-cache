@@ -41,7 +41,7 @@ public class RedisSentinelConfig {
         RedisClient redisClient = new SentinelRedisClient(redisProperties);
 
         redisClient.setKeySerializer(keyRedisSerializer);
-        redisClient.setValueSerializer(kryoRedisSerializer);
+        redisClient.setValueSerializer(fastJsonRedisSerializer);
         return redisClient;
     }
 }

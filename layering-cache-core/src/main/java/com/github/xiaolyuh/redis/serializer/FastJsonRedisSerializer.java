@@ -5,7 +5,9 @@ import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.util.IOUtils;
+import com.alibaba.fastjson.util.ParameterizedTypeImpl;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 
 /**
@@ -27,14 +29,14 @@ public class FastJsonRedisSerializer extends AbstractRedisSerializer {
         }
 
         try {
-            return JSON.toJSONBytes(value, SerializerFeature.WriteClassName);
+            return JSON.toJSONBytes(value, SerializerFeature.NotWriteRootClassName);
         } catch (Exception e) {
             throw new SerializationException(String.format("FastJsonRedisSerializer 序列化异常: %s, 【%s】", e.getMessage(), JSON.toJSONString(value)), e);
         }
     }
 
     @Override
-    public <T> T deserialize(byte[] bytes, Class<T> resultType) throws SerializationException {
+    public <T> T deserialize(byte[] bytes, Class<T> resultType, Type[] realTypes) throws SerializationException {
         if (SerializationUtils.isEmpty(bytes)) {
             return null;
         }
@@ -44,9 +46,12 @@ public class FastJsonRedisSerializer extends AbstractRedisSerializer {
         }
 
         try {
-            return JSON.parseObject(new String(bytes, IOUtils.UTF8), resultType, DEFAULT_REDIS_CONFIG, new Feature[0]);
+            ParameterizedTypeImpl parameterizedType = new ParameterizedTypeImpl(realTypes, null, resultType);
+            return JSON.parseObject(new String(bytes, IOUtils.UTF8), parameterizedType, DEFAULT_REDIS_CONFIG, new Feature[0]);
         } catch (Exception e) {
-            throw new SerializationException(String.format("FastJsonRedisSerializer 反序列化异常: %s, 【%s】", e.getMessage(), JSON.toJSONString(bytes)), e);
+            throw new SerializationException(
+                String.format("FastJsonRedisSerializer 反序列化异常: %s, 【%s】", e.getMessage(),
+                    new String(bytes, IOUtils.UTF8), e));
         }
     }
 }
