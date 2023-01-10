@@ -16,7 +16,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.xiaolyuh</groupId>
+            <groupId>com.github.harry</groupId>
             <artifactId>layering-cache-aspectj</artifactId>
             <version>3.4.7</version>
         </dependency>

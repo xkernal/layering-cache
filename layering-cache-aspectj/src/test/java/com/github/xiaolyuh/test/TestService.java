@@ -31,8 +31,8 @@ public class TestService {
 
     @Cacheable(value = "user:info", key = "#userId",
             firstCache = @FirstCache(expireTime = 4, timeUnit = TimeUnit.SECONDS),
-            secondaryCache = @SecondaryCache(expireTime = 10, preloadTime = 3,
-                    forceRefresh = true, timeUnit = TimeUnit.SECONDS))
+            secondaryCache = @SecondaryCache(expireTime = 5, preloadTime = 3,
+                    forceRefresh = true, timeUnit = TimeUnit.MINUTES))
     public User getUserById(long userId) {
         logger.debug("测试正常配置的缓存方法，参数是基本类型");
         User user = new User();
